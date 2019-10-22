@@ -26,6 +26,34 @@ class PersonalDetails extends Component<IProps, IPersonState> {
       case "lastName":
         this.setState({ LastName: event.target.value });
         break;
+
+      case "addr1":
+        this.setState({ Address1: event.target.value });
+        break;
+
+      case "addr2":
+        this.setState({ Address2: event.target.value });
+        break;
+
+      case "town":
+        this.setState({ Town: event.target.value });
+        break;
+
+      case "county":
+        this.setState({ County: event.target.value });
+        break;
+
+      case "postcode":
+        this.setState({ PostCode: event.target.value });
+        break;
+
+      case "phoneNumber":
+        this.setState({ PhoneNumber: event.target.value });
+        break;
+
+      case "dateOfBirth":
+        this.setState({ DateOfBirth: event.target.value });
+        break;
     }
   };
 
