@@ -1,11 +1,11 @@
 import { IPersonState } from "./State";
 
 export interface IRecordSate {
-  IsActi9ve: boolean;
+  IsActive: boolean;
 }
 
 export class RecordState implements IRecordSate {
-  public IsActi9ve: boolean;
+  public IsActive: boolean;
 }
 
 export type PersonRecord = RecordState & IPersonState;

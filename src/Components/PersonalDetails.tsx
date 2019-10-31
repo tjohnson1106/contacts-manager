@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Button from "reactstrap/lib/Button";
+// import Button from "reactstrap/lib/Button";
 import Col from "reactstrap/lib/Col";
 import Row from "reactstrap/lib/Row";
 
@@ -226,6 +226,14 @@ class PersonalDetails extends Component<IProps, IPersonState> {
       </Row>
     );
   }
+
+  private loadPeople = () => {
+    this.people = new Array<PersonRecord>();
+    this.dataLayer.Read().then((people) => {
+      this.people = people;
+      this.setState(this.state);
+    });
+  };
 
   private userCanSave = (hasErrors: boolean) => {
     this.canSave = hasErrors;
