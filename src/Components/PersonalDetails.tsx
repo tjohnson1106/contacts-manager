@@ -1,10 +1,14 @@
 import React, { Component } from "react";
-// import Button from "reactstrap/lib/Button";
+import Button from "reactstrap/lib/Button";
 import Col from "reactstrap/lib/Col";
 import Row from "reactstrap/lib/Row";
 
 import { IPersonState } from "../State";
+import { PersonRecord } from "../Types";
 import FormValidation from "../Validation/FormValidation";
+import { IRecordState, RecordState } from "../RecordState";
+import { PersonalDetailsTableBuilder } from "../PersonalDetailsTableBuilder";
+import { Database } from "../Database/Database";
 
 interface IProps {
   DefaultState: IPersonState;
@@ -12,16 +16,49 @@ interface IProps {
 
 class PersonalDetails extends Component<IProps, IPersonState> {
   private defaultState: Readonly<IPersonState>;
+  private readonly dataLayer: Database<PersonRecord>;
+  private people: IPersonState[];
+  private canSave: boolean = false;
 
   constructor(props: IProps) {
     super(props);
     this.defaultState = props.DefaultState;
     this.state = props.DefaultState;
+    const tableBuilder: PersonalDetailsTableBuilder = new PersonalDetailsTableBuilder();
+    this.dataLayer = new Database(tableBuilder.Build());
   }
 
-  private canSave: boolean = false;
+  public render() {
+    let people = null;
+    if (this.people) {
+      const copyThis = this;
+      people = this.people.map(function it(p) {
+        return (
+          <Row key={p.PersonId}>
+            <Col lg="6">
+              <label>
+                {p.FirstName} {p.LastName}
+              </label>
+            </Col>
+            <Col lg="3">
+              <Button
+                value={p.PersonId}
+                color="link"
+                onClick={copyThis.setActive}
+              >
+                Edit
+              </Button>
+            </Col>
+            <Col lg="3">
+              <Button value={p.PersonId} color="link" onClick={copyThis.delete}>
+                Delete
+              </Button>
+            </Col>
+          </Row>
+        );
+      }, this);
+    }
 
-  render() {
     return (
       <Row>
         <Col lg="8">
@@ -188,7 +225,7 @@ class PersonalDetails extends Component<IProps, IPersonState> {
             </Col>
           </Row>
           <Row>
-            {/* <Col>
+            <Col>
               <Button size="lg" color="primary" onClick={this.savePerson}>
                 Save
               </Button>
@@ -197,7 +234,7 @@ class PersonalDetails extends Component<IProps, IPersonState> {
               <Button size="lg" color="secondary" onClick={this.clear}>
                 Clear
               </Button>
-            </Col> */}
+            </Col>
           </Row>
           <Row>
             <FormValidation
@@ -208,23 +245,45 @@ class PersonalDetails extends Component<IProps, IPersonState> {
         </Col>
         <Col>
           <Col>
-            <Row>{/* <Col>{people}</Col> */}</Row>
+            <Row>
+              <Col>{people}</Col>
+            </Row>
             <Row>
               <Col lg="6">
-                {/* <Button size="lg" color="success" onClick={this.loadPeople}>
+                <Button size="lg" color="success" onClick={this.loadPeople}>
                   Load
-                </Button> */}
+                </Button>
               </Col>
               <Col lg="6">
-                {/* <Button size="lg" color="info" onClick={this.clear}>
+                <Button size="lg" color="info" onClick={this.clear}>
                   New Person
-                </Button> */}
+                </Button>
               </Col>
             </Row>
           </Col>
         </Col>
       </Row>
     );
+  }
+
+  private delete = (event: any) => {
+    const person: string = event.target.value;
+    this.DeletePerson(person);
+  };
+
+  private async DeletePerson(person: string) {
+    const foundPerson = this.people.find((element: IPersonState) => {
+      return element.PersonId === person;
+    });
+    if (!foundPerson) {
+      return;
+    }
+    const personState: IRecordState = new RecordState();
+    personState.IsActive = false;
+    const state: PersonRecord = { ...foundPerson, ...personState };
+    await this.dataLayer.Update(state);
+    this.loadPeople();
+    this.clear();
   }
 
   private loadPeople = () => {
@@ -235,49 +294,72 @@ class PersonalDetails extends Component<IProps, IPersonState> {
     });
   };
 
+  private setActive = (event: any) => {
+    const person: string = event.target.value;
+    const state = this.people.find((element: IPersonState) => {
+      return element.PersonId === person;
+    });
+    if (state) {
+      this.setState(state);
+    }
+  };
+
+  private savePerson = () => {
+    if (!this.canSave) {
+      alert(`Cannot save this record with missing or incorrect items`);
+      return;
+    }
+    const personState: IRecordState = new RecordState();
+    personState.IsActive = true;
+    const state: PersonRecord = { ...this.state, ...personState };
+    if (state.PersonId === "") {
+      state.PersonId = Date.now().toString();
+      this.dataLayer.Create(state);
+      this.loadPeople();
+      this.clear();
+    } else {
+      this.dataLayer.Update(state).then((rsn) => this.loadPeople());
+    }
+  };
+
+  private clear = () => {
+    this.setState(this.defaultState);
+  };
+
   private userCanSave = (hasErrors: boolean) => {
     this.canSave = hasErrors;
   };
 
   private updateBinding = (event: any) => {
     switch (event.target.id) {
-      case "firstName":
+      case `firstName`:
         this.setState({ FirstName: event.target.value });
         break;
-
-      case "lastName":
+      case `lastName`:
         this.setState({ LastName: event.target.value });
         break;
-
-      case "addr1":
+      case `addr1`:
         this.setState({ Address1: event.target.value });
         break;
-
-      case "addr2":
+      case `addr2`:
         this.setState({ Address2: event.target.value });
         break;
-
-      case "town":
+      case `town`:
         this.setState({ Town: event.target.value });
         break;
-
-      case "county":
+      case `county`:
         this.setState({ County: event.target.value });
         break;
-
-      case "postcode":
+      case `postcode`:
         this.setState({ PostCode: event.target.value });
         break;
-
-      case "phoneNumber":
+      case `phoneNumber`:
         this.setState({ PhoneNumber: event.target.value });
         break;
-
-      case "dateOfBirth":
+      case `dateOfBirth`:
         this.setState({ DateOfBirth: event.target.value });
         break;
     }
   };
 }
-
 export default PersonalDetails;

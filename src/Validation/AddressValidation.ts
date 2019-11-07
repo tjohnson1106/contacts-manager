@@ -1,6 +1,7 @@
 import { MinLengthValidator } from "../Validators/MinLengthValidator";
 import { RegularExpressionValidator } from "../Validators/RegularExpressionValidator";
 import { IPersonState } from "../State";
+import { IValidation } from "./IValidation";
 
 export class AddressValidation implements IValidation {
   private readonly minLengthValidator: MinLengthValidator = new MinLengthValidator(

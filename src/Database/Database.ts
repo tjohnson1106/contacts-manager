@@ -1,6 +1,5 @@
 import { RecordState } from "../RecordState";
 import { ITable } from "./TableBuilder";
-import { resolve } from "dns";
 
 export class Database<T extends RecordState> {
   private readonly indexDb: IDBFactory;

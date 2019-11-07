@@ -1,10 +1,10 @@
 import { IPersonState } from "./State";
 
-export interface IRecordSate {
+export interface IRecordState {
   IsActive: boolean;
 }
 
-export class RecordState implements IRecordSate {
+export class RecordState implements IRecordState {
   public IsActive: boolean;
 }
 

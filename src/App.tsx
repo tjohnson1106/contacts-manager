@@ -1,8 +1,8 @@
 import * as React from "react";
 import Container from "reactstrap/lib/Container";
 
-import PersonalDetails from "./Components/PersonalDetails";
 import "./App.css";
+import PersonalDetails from "./Components/PersonalDetails";
 import { IPersonState } from "./State";
 
 class App extends React.Component {

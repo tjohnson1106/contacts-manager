@@ -25,14 +25,6 @@ class FormValidation extends Component<IValidationProps> {
     this.validation.push(new PhoneValidation());
   }
 
-  private Validate() {
-    this.failures = new Array<string>();
-    this.validation.forEach((validation) => {
-      validation.Validate(this.props.CurrentState, this.failures);
-    });
-    this.props.CanSave(this.failures.length === 0);
-  }
-
   public render() {
     this.Validate();
     const errors = this.failures.map(function it(failure) {
@@ -45,6 +37,14 @@ class FormValidation extends Component<IValidationProps> {
       );
     });
     return <Col>{errors}</Col>;
+  }
+
+  private Validate() {
+    this.failures = new Array<string>();
+    this.validation.forEach((validation) => {
+      validation.Validate(this.props.CurrentState, this.failures);
+    });
+    this.props.CanSave(this.failures.length === 0);
   }
 }
 
